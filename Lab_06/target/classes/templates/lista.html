@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mi Blog Personal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Entradas del Blog</h2>
+
+    <div th:if="${msgExito}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${msgExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${msgError}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${msgError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <a href="/posts/nuevo" class="btn btn-primary mb-3">Crear Nueva Entrada</a>
+
+    <div th:if="${#lists.isEmpty(posts)}" class="alert alert-info">
+        No hay entradas en el blog todavía. ¡Crea una!
+    </div>
+
+    <div th:each="post : ${posts}" class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${post.titulo}"></h5>
+            <p><strong>Autor:</strong> <span th:text="${post.autor}">Autor</span></p>
+            <p><strong>Categoría:</strong> <span th:text="${post.categoria}">Categoría</span></p>
+            <p th:text="${post.contenido.substring(0, Math.min(post.contenido.length(), 100)) + '...'}">Extracto</p>
+            <div class="d-flex gap-2">
+                <a th:href="@{/posts/{id}(id=${post.id})}" class="btn btn-info btn-sm">Ver Completo</a>
+                <a th:href="@{/posts/editar/{id}(id=${post.id})}" class="btn btn-warning btn-sm">Editar</a>
+                <form th:action="@{/posts/eliminar/{id}(id=${post.id})}" method="post" onsubmit="return confirm('¿Seguro que deseas eliminar esta entrada?')">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
