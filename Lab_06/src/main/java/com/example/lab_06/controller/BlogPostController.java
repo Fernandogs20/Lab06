@@ -13,36 +13,37 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/posts")
 public class BlogPostController {
 
     @Autowired
     private BlogPostRepository blogPostRepository;
 
-    @GetMapping
+    @GetMapping("/lista")
     public String listarPosts(Model model) {
         List<BlogPost> posts = blogPostRepository.findAll();
         model.addAttribute("posts", posts);
-        return "lista"; // Cambiado de "posts/lista" a "lista"
+        return "lista";
     }
 
-    @GetMapping("/nuevo")
+    @GetMapping("/formulario")
     public String nuevoPost(Model model) {
         model.addAttribute("post", new BlogPost());
         return "formulario";
     }
 
     @PostMapping("/guardar")
-    public String guardarPost(@ModelAttribute("post") @Valid BlogPost post, BindingResult result, RedirectAttributes attr) {
+    public String guardarPost(@ModelAttribute("post") @Valid BlogPost post,
+                              BindingResult result,
+                              RedirectAttributes attr) {
         if (result.hasErrors()) {
             return "formulario";
         }
         blogPostRepository.save(post);
         attr.addFlashAttribute("msgExito", "Entrada guardada con éxito");
-        return "redirect:/posts";
+        return "redirect:/lista"; // ✅ redirección corregida
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/detalle/{id}")
     public String verPost(@PathVariable Long id, Model model) {
         BlogPost post = blogPostRepository.findById(id).orElseThrow();
         model.addAttribute("post", post);
@@ -60,7 +61,6 @@ public class BlogPostController {
     public String eliminarPost(@PathVariable Long id, RedirectAttributes attr) {
         blogPostRepository.deleteById(id);
         attr.addFlashAttribute("msgError", "Entrada eliminada");
-        return "redirect:/posts";
+        return "redirect:/lista"; // ✅ redirección corregida
     }
 }
-
